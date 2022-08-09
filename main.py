@@ -1,3 +1,5 @@
+from ast import parse
+from http.client import ResponseNotReady
 import json
 import re
 from urllib import response
@@ -24,21 +26,24 @@ def parse_text(input):
 
 def main():
 
-    f = open('data/submissions.json')
+    f = open('data/full.json')
     response_json = json.load(f)
 
-    response_json[0]['title']
-    response_json[0]['selftext']
-
     for i in range(len(response_json)):
+        if not (i % 100):
+            print("Entry ", i)
+
         print(i)
 
-        parse_text(response_json[i]['title'])
+        if "title" in response_json[i]:
+            parse_text(response_json[i]['title'])
 
         if "selftext" in response_json[i]:
             parse_text(response_json[i]['selftext'])
-
         
+        if "body" in response_json[i]:
+            parse_text(response_json[i]['body'])
+
     print("Analysed submissions: ", len(response_json))
     print("Remedy counts: ", remedies)
 
