@@ -3,26 +3,24 @@ from http.client import ResponseNotReady
 import json
 import re
 from urllib import response
-
-symptoms = {}
-remedies = {
-    'niacin': 0,
-    'nac': 0,
-    'ginko': 0,
-    'quercetin': 0,
-    'nattokinase': 0,
-    'natto': 0,
-    'zinc': 0,
-    'probiotics':0,
-    'prebiotics':0,
-    'antihistamines':0,
-}
+from naive import scoring
+from entities import remedies, index_to_struct
+from nltk.tokenize import word_tokenize
 
 def parse_text(input):
-    parsed_text = re.findall(r"[\w']+|[.,!?;]", input.lower())
+    parsed_text = word_tokenize(input)
+    matched = set()
     for each in parsed_text:
         if each in remedies:
+            matched.add(each)
             remedies[each] += 1
+
+    for each in matched:
+        sentiment = scoring(parsed_text, each, 5)
+        print("Sentence: ", input)
+        print("Target Word: ", each)
+        print("Score: ", sentiment)
+        print()
 
 def main():
 
@@ -32,8 +30,6 @@ def main():
     for i in range(len(response_json)):
         if not (i % 100):
             print("Entry ", i)
-
-        print(i)
 
         if "title" in response_json[i]:
             parse_text(response_json[i]['title'])
